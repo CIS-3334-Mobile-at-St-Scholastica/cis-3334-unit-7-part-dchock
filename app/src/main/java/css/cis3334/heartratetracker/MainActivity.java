@@ -1,5 +1,6 @@
 package css.cis3334.heartratetracker;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -23,6 +25,10 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<HeartRate> hrAdapter;
 
     //ArrayList<HeartRate> basicheartRateList;
+
+
+    //constant to determine which sub activity returns
+    private static final int CIS3334_REQUEST_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +52,26 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 HeartRate hr = (HeartRate) parent.getItemAtPosition(position);
                 tvSelect.setText("You selected: " + hr.toString());
+
+                Intent secActIntent = new Intent(MainActivity.this, OtherActivity.class);
+                secActIntent.putExtra("HeartRate", hr);
+                //startActivity(secActIntent)     // if no result is returned
+                startActivityForResult(secActIntent, CIS3334_REQUEST_CODE);
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == CIS3334_REQUEST_CODE) {
+            if (data.hasExtra("NewName")) {
+                String result = data.getExtras().getString("NewName");
+                if (result != null && result.length() > 0) {
+                    tvSelect.setText("New name : " + result);
+                    Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 }
